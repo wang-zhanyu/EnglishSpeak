@@ -3,3 +3,4 @@ whisper
 audio_recorder_streamlit
 azure-cognitiveservices-speech
 openai-whisper
+openai
