@@ -41,8 +41,7 @@ model_dict = {
     'Chinese (Cantonese, Simplified)YunSong (Male)-云松':'yue-CN-YunSongNeural',
 }
 
-selected_language = st.sidebar.selectbox("Language", ('English (Austrilia)', 'English (India)', 'English (United States)', 'English (United Kingdom)', 'Chinese (Mandarin, Simplified)',
-                                              'Chinese (Northeastern Mandarin, Simplified)', 'Chinese (Cantonese, Simplified)'))
+selected_language = st.sidebar.selectbox("Language", ('English (Austrilia)', 'English (India)', 'English (United States)', 'English (United Kingdom)'))
 if selected_language == 'English (Austrilia)':
     selected_voice = st.sidebar.selectbox("Voice", ('Natasha (Female)', 'William (Male)'))
 elif selected_language == 'English (India)':
