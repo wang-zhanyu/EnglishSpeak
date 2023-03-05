@@ -6,24 +6,35 @@ from streamlit_extras.add_vertical_space import add_vertical_space
 import os
 import azure.cognitiveservices.speech as speechsdk
 from audio_recorder_streamlit import audio_recorder
+import openai
+import whisper
 
 
-# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model_names = {
+    "Tiny (English only)": 'tiny.en', 
+    "Tiny": 'tiny', 
+    "Base (English only)":'base.en',
+    "Base": 'base', 
+    "Small (English only)":'small.en',
+    "Small": 'small',
+    "Medium (English only)":'medium.en',
+    "Medium": 'medium',
+    "Large": 'large'
+}
+
+selected_model = st.sidebar.selectbox("Select a Model (Larger models take longer but are more accurate)", ('Medium', 'Tiny (English only)', 'Tiny', 'Base (English only)', 'Base', 'Small (English only)', 'Small', 'Medium (English only)', 'Large'))
+
+
+@st.cache_data(show_spinner=False)
+def generate_subtitle(path):
+    model = whisper.load_model(model_names[selected_model])
+    res = model.transcribe(path)
+    return res
+
 
 st.write("<style>h1{text-align:center;}</style>", unsafe_allow_html=True)
 st.title("🗣 AI English teacher")
 add_vertical_space(3)
-
-
-audio_bytes = audio_recorder()
-if audio_bytes:
-    st.audio(audio_bytes, format="audio/wav")
-
-
-# This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
-speech_config = speechsdk.SpeechConfig(subscription="da388ea1b54e4fb398c3818f568db437", region="eastus")
-audio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
-
 
 model_dict = {
     'English (Austrilia)Natasha (Female)': 'en-AU-NatashaNeural',
@@ -57,31 +68,40 @@ elif selected_language == 'Chinese (Northeastern Mandarin, Simplified)':
 elif selected_language == 'Chinese (Cantonese, Simplified)':
      selected_voice = st.sidebar.selectbox("Voice", ('XiaoMin (Female)-晓敏', 'YunSong (Male)-云松'))
     
+    
+# # This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
+# speech_config = speechsdk.SpeechConfig(subscription="da388ea1b54e4fb398c3818f568db437", region="eastus")
+# audio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
+# # The language of the voice that speaks.
+# speech_config.speech_synthesis_voice_name=model_dict[selected_language+selected_voice]
+# speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
 
-# The language of the voice that speaks.
-speech_config.speech_synthesis_voice_name=model_dict[selected_language+selected_voice]
-speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
 
+audio_bytes = audio_recorder()
+if audio_bytes:
+    st.audio(audio_bytes, format="audio/wav")
 
+text = generate_subtitle(audio_bytes)
+st.write(text)
 # Get text from the console and synthesize to the default speaker.
 # text = st.text_input("Input", placeholder="Enter some text that you want to speak >", label_visibility="hidden")
-text = st.text_area("Input", placeholder="Enter some text that you want to speak >", label_visibility="hidden", height=150, max_chars=500)
+# text = st.text_area("Input", placeholder="Enter some text that you want to speak >", label_visibility="hidden", height=150, max_chars=500)
 
-if text:
-    speech_synthesis_result = speech_synthesizer.speak_text_async(text).get()
-    # if speech_synthesis_result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
-    #     st.write("Speech synthesized for text [{}]".format(text))
-    if speech_synthesis_result.reason == speechsdk.ResultReason.Canceled:
-        cancellation_details = speech_synthesis_result.cancellation_details
-        st.warning("Speech synthesis canceled: {}".format(cancellation_details.reason))
-        if cancellation_details.reason == speechsdk.CancellationReason.Error:
-            if cancellation_details.error_details:
-                st.error("Error details: {}".format(cancellation_details.error_details))
-                st.warning("Did you set the speech resource key and region values?")
+# if text:
+#     speech_synthesis_result = speech_synthesizer.speak_text_async(text).get()
+#     # if speech_synthesis_result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
+#     #     st.write("Speech synthesized for text [{}]".format(text))
+#     if speech_synthesis_result.reason == speechsdk.ResultReason.Canceled:
+#         cancellation_details = speech_synthesis_result.cancellation_details
+#         st.warning("Speech synthesis canceled: {}".format(cancellation_details.reason))
+#         if cancellation_details.reason == speechsdk.CancellationReason.Error:
+#             if cancellation_details.error_details:
+#                 st.error("Error details: {}".format(cancellation_details.error_details))
+#                 st.warning("Did you set the speech resource key and region values?")
 
-    filename = "downloads/result.wav"
-    with open(filename, "wb") as f:
-        f.write(speech_synthesis_result.audio_data)
+#     filename = "downloads/result.wav"
+#     with open(filename, "wb") as f:
+#         f.write(speech_synthesis_result.audio_data)
     
-    st.audio(filename)
+#     st.audio(filename)
 
