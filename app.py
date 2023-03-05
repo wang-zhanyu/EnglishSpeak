@@ -1,14 +1,14 @@
 import streamlit as st
 # import whisper
 from streamlit_extras.add_vertical_space import add_vertical_space
-from googletrans import Translator
-import torch
+# from googletrans import Translator
+# import torch
 import os
 import azure.cognitiveservices.speech as speechsdk
 from audio_recorder_streamlit import audio_recorder
 
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 st.write("<style>h1{text-align:center;}</style>", unsafe_allow_html=True)
 st.title("🗣 AI English teacher")
