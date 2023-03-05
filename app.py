@@ -1,5 +1,5 @@
 import streamlit as st
-import whisper
+# import whisper
 from streamlit_extras.add_vertical_space import add_vertical_space
 from googletrans import Translator
 import torch
