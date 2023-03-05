@@ -2,4 +2,3 @@ streamlit_extras
 whisper
 audio_recorder_streamlit
 azure-cognitiveservices-speech
-python==3.8
