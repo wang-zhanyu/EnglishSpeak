@@ -6,7 +6,7 @@ from streamlit_extras.add_vertical_space import add_vertical_space
 import os
 import azure.cognitiveservices.speech as speechsdk
 from audio_recorder_streamlit import audio_recorder
-import openai
+# import openai
 import whisper
 
 
